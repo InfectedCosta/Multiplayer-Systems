@@ -79,9 +79,11 @@ static public class AssignmentPart1
 
     static public void SavePartyButtonPressed()
     {
-        try { using (StreamWriter writer = new StreamWriter(SavePath, false))
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(SavePath, false))
                 writer.WriteLine(GameContent.partyCharacters.Count);
-        foreach (PartyCharacter pc in GameContent.partyCharacters)
+            foreach (PartyCharacter pc in GameContent.partyCharacters)
             {
                 string line = pc.classID + ":" +
                     pc.health + ":" +
@@ -90,12 +92,12 @@ static public class AssignmentPart1
                     pc.agility + ":" +
                     pc.wisdom;
 
-                if (pc.equipment != null && pc.equipment.Count > 0 )
+                if (pc.equipment != null && pc.equipment.Count > 0)
                 {
                     line += "/";
                     bool first = true;
                     foreach (int eq in pc.equipment)
-                    { 
+                    {
                         if (!first)
                         {
                             line += ":";
@@ -103,13 +105,13 @@ static public class AssignmentPart1
                         }
                         line += eq;
                         first = false;
-                            }
+                    }
                 }
 
-                BinaryWriter.Writeline(line);
+                writer.Writeline(line);
             }
-        }
 
+        }
         Debug.Log("[Save] Party successfully saved.");
     }
 
