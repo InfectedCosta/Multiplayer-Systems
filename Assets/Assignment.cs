@@ -79,6 +79,8 @@ static public class AssignmentPart1
 
     static public void SavePartyButtonPressed()
     {
+        Debug.Log("[Save] Entered SavePartyButtonPressed");
+
         using (StreamWriter writer = new StreamWriter(SavePath, false))
         {
             writer.WriteLine(GameContent.partyCharacters.Count);
