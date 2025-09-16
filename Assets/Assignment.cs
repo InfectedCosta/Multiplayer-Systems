@@ -8,6 +8,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Xml.Linq;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 
@@ -120,17 +123,52 @@ static public class AssignmentPart1
 
     static public void LoadPartyButtonPressed()
     {
-        GameContent.partyCharacters.Clear();
+        using (StreamReader reader = new StreamReader(SavePath))
+        {
+            int count = int.Parse(reader.ReadLine());
+            GameContent.partyCharacters.Clear();
 
-        PartyCharacter pc = new PartyCharacter(1, 10, 10, 10, 10, 10);
-        GameContent.partyCharacters.AddLast(pc);
-        pc = new PartyCharacter(2, 11, 11, 11, 11, 11);
-        GameContent.partyCharacters.AddLast(pc);
-        pc = new PartyCharacter(3, 12, 12, 12, 12, 12);
-        GameContent.partyCharacters.AddLast(pc);
+            for (int i = 0; i < count; i++)
+            {
+                string line = reader.ReadLine();
 
-        GameContent.RefreshUI();
+                string statsPart = line;
+                string equipPart = null;
+                int slashIndex = line.IndexOf('/');
+                if (slashIndex >= 0)
+                {
+                    statsPart = line.Substring(0, slashIndex);
+                    if (slashIndex + 1 < line.Length)
+                        equipPart = line.Substring(slashIndex + 1);
+                }
+
+                string[] s = statsPart.Split(':');
+                PartyCharacter pc = new PartyCharacter(
+                    int.Parse(s[0]),
+                    int.Parse(s[1]),
+                    int.Parse(s[2]),
+                    int.Parse(s[3]),
+                    int.Parse(s[4]),
+                    int.Parse(s[5])
+                );
+                pc.equipment = new LinkedList<int>();
+
+                if (!string.IsNullOrEmpty(equipPart))
+                {
+                    string[] eqs = equipPart.Split(':');
+                    foreach (string eq in eqs)
+                    {
+                        if (eq.Length > 0)
+                            pc.equipment.AddLast(int.Parse(eq));
+                    }
+                }
+                GameContent.partyCharacters.AddLast(pc);
+            }
+        }
+
+        Debug.Log("[Load] Party loaded.");
     }
+
 
 }
 
