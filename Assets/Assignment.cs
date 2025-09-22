@@ -166,6 +166,7 @@ static public class AssignmentPart1
             }
         }
 
+        GameContent.RefreshUI();
         Debug.Log("[Load] Party loaded.");
     }
 
@@ -184,7 +185,7 @@ static public class AssignmentPart1
 //  This will enable the needed UI/function calls for your to proceed with your assignment.
 static public class AssignmentConfiguration
 {
-    public const int PartOfAssignmentThatIsInDevelopment = 2;
+    public const int PartOfAssignmentThatIsInDevelopment = 1;
 }
 
 /*
@@ -223,7 +224,7 @@ Good luck, journey well.
 static public class AssignmentPart2
 {
 
-    static List<string> listOfPartyNames;
+    static List<string> listOfPartyNames = new List<string>();
 
     static public void GameStart()
     {
