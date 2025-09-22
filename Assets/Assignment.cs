@@ -264,11 +264,43 @@ static public class AssignmentPart2
 
     static public void SavePartyButtonPressed(string partyName)
     {
-        GameContent.RefreshUI();
+        if (string.IsNullOrWhiteSpace(partyName)) return;
+        string path = PruneFileName(partyName) + ".save";
+
+        using (var w = new System.IO.StreamWriter(path, false))
+        {
+            w.WriteLine(GameContent.partyCharacters.Count);
+            foreach (PartyCharacter pc in GameContent.partyCharacters)
+            {
+                string line = pc.classID + ":" + pc.health + ":" + pc.mana + ":" + pc.strength + ":" + pc.wisdom;
+
+                if (pc.equipment != null && pc.equipment.Count > 0)
+                {
+                    line += "/";
+                    bool first = true;
+                    foreach (int eq in pc.equipment)
+                    {
+                        if (first) line += ":";
+                        line += eq;
+                        first = false;
+                    }
+                }
+                w.WriteLine(line);
+            }
+        }
+            ReloadNameList();
+            GameContent.RefreshUI();
     }
 
     static public void DeletePartyButtonPressed(string partyName)
     {
+        if (string.IsNullOrWhiteSpace(partyName)) return;
+
+        string path = PruneFileName(partyName) + ".save";
+        if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+
+        GameContent.partyCharacters.Clear();
+        ReloadNameList();
         GameContent.RefreshUI();
     }
 

@@ -204,7 +204,7 @@ public class SystemManager : MonoBehaviour
 
     public void SaveButton2Pressed()
     {
-        AssignmentPart2.SavePartyButtonPressed();
+        AssignmentPart2.SavePartyButtonPressed(GetPartyNameFromInput());
     }
 
     public void NewButtonPressed()
@@ -214,7 +214,7 @@ public class SystemManager : MonoBehaviour
 
     public void DeleteButtonPressed()
     {
-        AssignmentPart2.DeletePartyButtonPressed();
+        AssignmentPart2.DeletePartyButtonPressed(GetPartyNameFromInput());
     }
 
     public string GetPartyNameFromInput()
