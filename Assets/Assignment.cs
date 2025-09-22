@@ -259,12 +259,60 @@ static public class AssignmentPart2
 
     static public void LoadPartyDropDownChanged(string selectedName)
     {
+        if (string.IsNullOrWhiteSpace(selectedName)) return;
+
+        string path = PruneFileName(selectedName) + ".save";
+        if (!System.IO.File.Exists(path)) return;
+
+        using (var r = new System.IO.StreamReader(path))
+        {
+            string first = r.ReadLine();
+            if (string.IsNullOrWhiteSpace(first)) return;
+
+            int count = int.Parse(first.Trim());
+            GameContent.partyCharacters.Clear();
+
+            for (int i = 0; i < count; i++)
+            {
+                string line = r.ReadLine();
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                string stats = line, equip = null;
+                int slash = line.IndexOf('/');
+                if (slash >= 0)
+                {
+                    stats = line.Substring(0, slash);
+                    if (slash + 1 < line.Length) equip = line.Substring(slash + 1);
+                }
+
+                var s = stats.Split(':');
+                if (s.Length < 6) continue;
+
+                var pc = new PartyCharacter();
+                pc.classID = int.Parse(s[0]);
+                pc.health = int.Parse(s[1]);
+                pc.mana = int.Parse(s[2]);
+                pc.strength = int.Parse(s[3]);
+                pc.agility = int.Parse(s[4]);
+                pc.wisdom = int.Parse(s[5]);
+
+                pc.equipment = new LinkedList<int>();
+                if (!string.IsNullOrEmpty(equip))
+                {
+                    foreach (var tok in equip.Split(':'))
+                        if (tok.Length > 0) pc.equipment.AddLast(int.Parse(tok));
+                }
+
+                GameContent.partyCharacters.AddLast(pc);
+            }
+        }
+
         GameContent.RefreshUI();
     }
 
+
     static public void SavePartyButtonPressed(string partyName)
     {
-        if (string.IsNullOrWhiteSpace(partyName)) return;
         string path = PruneFileName(partyName) + ".save";
 
         using (var w = new System.IO.StreamWriter(path, false))
@@ -272,7 +320,8 @@ static public class AssignmentPart2
             w.WriteLine(GameContent.partyCharacters.Count);
             foreach (PartyCharacter pc in GameContent.partyCharacters)
             {
-                string line = pc.classID + ":" + pc.health + ":" + pc.mana + ":" + pc.strength + ":" + pc.wisdom;
+                string line = pc.classID + ":" + pc.health + ":" + pc.mana + ":" +
+                              pc.strength + ":" + pc.agility + ":" + pc.wisdom;
 
                 if (pc.equipment != null && pc.equipment.Count > 0)
                 {
@@ -280,16 +329,16 @@ static public class AssignmentPart2
                     bool first = true;
                     foreach (int eq in pc.equipment)
                     {
-                        if (first) line += ":";
-                        line += eq;
-                        first = false;
+                        if (!first) line += ":";
+                        line += eq; first = false;
                     }
                 }
                 w.WriteLine(line);
             }
         }
-            ReloadNameList();
-            GameContent.RefreshUI();
+
+        ReloadNameList();
+        GameContent.RefreshUI();
     }
 
     static public void DeletePartyButtonPressed(string partyName)
