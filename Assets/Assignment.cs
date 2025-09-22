@@ -228,12 +228,28 @@ static public class AssignmentPart2
 
     static public void GameStart()
     {
-        listOfPartyNames = new List<string>();
-        listOfPartyNames.Add("sample 1");
-        listOfPartyNames.Add("sample 2");
-        listOfPartyNames.Add("sample 3");
-
+        ReloadNameList();
         GameContent.RefreshUI();
+    }
+    static void ReloadNameList()
+    {
+        listOfPartyNames.Clear();
+        foreach (var f in System.IO.Directory.GetFiles(".", "*.save"))
+            listOfPartyNames.Add(System.IO.Path.GetFileNameWithoutExtension(f));
+        listOfPartyNames.Sort(System.StringComparer.OrdinalIgnoreCase);
+    }
+
+    static string PruneFileName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "Default Party";
+
+        char[] invalid = System.IO.Path.GetInvalidFileNameChars();
+        foreach (char c in invalid)
+            name = name.Replace(c.ToString(), "");
+
+        name = name.Trim();
+        return string.IsNullOrEmpty(name) ? "Party" : name;
     }
 
     static public List<string> GetListOfPartyNames()
@@ -246,12 +262,12 @@ static public class AssignmentPart2
         GameContent.RefreshUI();
     }
 
-    static public void SavePartyButtonPressed()
+    static public void SavePartyButtonPressed(string partyName)
     {
         GameContent.RefreshUI();
     }
 
-    static public void DeletePartyButtonPressed()
+    static public void DeletePartyButtonPressed(string partyName)
     {
         GameContent.RefreshUI();
     }
